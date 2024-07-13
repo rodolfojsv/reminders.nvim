@@ -40,7 +40,7 @@ function reminders.setup(options)
 
 		AddReminder(reminder)
 
-		print("Added to your reminders every " .. minutes)
+		print("\nAdded to your reminders every " .. minutes .. " minutes")
 	end, { nargs = "?" })
 
 	vim.api.nvim_create_user_command("RemindMeDailyAt", function(opts)
@@ -62,7 +62,7 @@ function reminders.setup(options)
 
 		AddReminder(reminder)
 
-		print("Added to your daily reminders")
+		print("\nAdded to your daily reminders")
 	end, { nargs = "?" })
 
 	vim.api.nvim_create_user_command("RemindMeAt", function(opts)
