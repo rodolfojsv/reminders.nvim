@@ -33,7 +33,9 @@ function TimeToShow(reminder)
 
 	local hasNotShownToday = reminder.shownAt == nil
 		or (not reminder.shownAt == nil and reminder.shownAt < currentDate.day)
-	return currentDate.hour >= reminderHour and currentDate.min >= reminderMin and hasNotShownToday
+	return currentDate.hour >= reminderHour
+		and currentDate.min >= reminderMin
+		and (hasNotShownToday or not reminder.remindEvery == nil)
 end
 
 function CheckForNextExecution(reminder)
