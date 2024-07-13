@@ -1,5 +1,5 @@
-require("processor")
-require("utils")
+require("reminders.processor")
+require("reminders.utils")
 local reminders = {}
 function reminders.setup(options)
 	options = options or {}
