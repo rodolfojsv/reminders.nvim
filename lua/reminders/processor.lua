@@ -33,9 +33,8 @@ function TimeToShow(reminder)
 
 	local hasNotShownToday = reminder.shownAt == nil
 		or (not reminder.shownAt == nil and reminder.shownAt < currentDate.day)
-	return currentDate.hour >= reminderHour
-		and currentDate.min >= reminderMin
-		and (hasNotShownToday or not (reminder.remindEvery == nil))
+	return ((currentDate.hour == reminderHour and currentDate.min >= reminderMin) or currentDate.hour > reminderHour)
+		and hasNotShownToday
 end
 
 function CheckForNextExecution(reminder)
@@ -82,7 +81,7 @@ function ProcessTimerCallback()
 			if not reminders[i].persistent then
 				table.remove(reminders, i)
 			else
-				if not (reminders[i].remindEvery == nil) then
+				if reminders[i].remindEvery ~= nil then
 					reminders[i].remindAt = nil
 					CheckForNextExecution(reminders[i])
 				else
