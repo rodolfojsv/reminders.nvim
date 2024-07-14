@@ -1,5 +1,6 @@
 require("reminders.processor")
 require("reminders.utils")
+require("plugin.reminders")
 local reminders = {}
 
 function reminders.setup(options)
