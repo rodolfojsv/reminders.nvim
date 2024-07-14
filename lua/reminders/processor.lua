@@ -64,9 +64,6 @@ function ProcessTimerCallback()
 	local anyWasTriggered = false
 
 	for i = 1, #reminders do
-		if reminders[i].showing == nil then
-			reminders[i].showing = false
-		end
 		CheckForNextExecution(reminders[i])
 
 		if TimeToShow(reminders[i]) then
