@@ -38,6 +38,12 @@ function AddReminder(reminder)
 		CheckForNextExecution(reminder)
 	end
 
+	if reminder.remindIn ~= nil then
+		reminder.reminderDate = os.time() + tonumber(reminder.remindIn) * 60
+		reminder.shownAt = reminder.reminderDate - 60
+		reminder.remindIn = nil
+	end
+
 	reminder.index = #reminders + 1
 	table.insert(reminders, reminder)
 	SaveFile()

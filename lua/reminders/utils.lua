@@ -1,6 +1,6 @@
-function GetUserInput()
+function GetUserInput(prompt)
 	local response = ""
-	vim.ui.input({ prompt = "What is the reminder: " }, function(res)
+	vim.ui.input({ prompt = prompt }, function(res)
 		if res == nil then
 			return
 		end

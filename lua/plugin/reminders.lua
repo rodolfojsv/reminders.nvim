@@ -61,6 +61,25 @@ vim.api.nvim_create_user_command("RemindMeAt", function(opts)
 	print("\nAdded to your reminders")
 end, { nargs = "?" })
 
+vim.api.nvim_create_user_command("RemindMeIn", function(opts)
+	local minutes = Trim(opts.args)
+	if minutes == "" then
+		return
+	end
+
+	local reminderText = GetUserInput("What is the reminder: ")
+
+	if reminderText == "" then
+		return
+	end
+
+	local reminder = { reminderMsg = reminderText, remindIn = minutes, persistent = false }
+
+	AddReminder(reminder)
+
+	print("\nAdded to your reminders")
+end, { nargs = "?" })
+
 vim.api.nvim_create_user_command("ReminderClose", function()
 	if HasNotify() then
 		require("notify").dismiss()
