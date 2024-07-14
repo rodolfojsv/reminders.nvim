@@ -68,7 +68,7 @@ vim.api.nvim_create_user_command("ReminderClose", function()
 	end
 end, { desc = "Close notification" })
 
-vim.api.nvim_create_user_command("ReminderRemoveAtt", function(opts)
+vim.api.nvim_create_user_command("ReminderRemoveAt", function(opts)
 	local index = Trim(opts.args)
 	if index == "" or index == nil then
 		return
