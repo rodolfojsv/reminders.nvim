@@ -16,7 +16,7 @@ function InitializeRemindersFromFile()
 			if reminders[i].reminderDate == nil then
 				if reminders[i].remindAt ~= nil then
 					reminders[i].reminderDate = ConvertToEpoch(reminders[i].remindAt)
-					reminders[i].shownAt = os.time()
+					reminders[i].shownAt = reminders[i].reminderDate - 60
 					reminders[i].remindAt = nil
 				end
 			end
@@ -30,7 +30,7 @@ end
 function AddReminder(reminder)
 	if reminder.remindAt ~= nil then
 		reminder.reminderDate = ConvertToEpoch(reminder.remindAt)
-		reminder.shownAt = os.time()
+		reminder.shownAt = reminder.reminderDate - 60
 		reminder.remindAt = nil
 	end
 
