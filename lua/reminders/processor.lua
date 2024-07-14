@@ -18,6 +18,10 @@ function InitializeRemindersFromFile()
 				reminders[i].remindDate = ConvertToEpoch(reminders[i].remindAt)
 				reminders[i].remindAt = nil
 			end
+
+			if reminders[i].index == nil then
+				reminders[i].index = i
+			end
 		end
 	end
 end
@@ -32,7 +36,27 @@ function AddReminder(reminder)
 		CheckForNextExecution(reminder)
 	end
 
+	reminder.index = #reminders + 1
 	table.insert(reminders, reminder)
+	SaveFile()
+end
+
+function RemoveReminder(index)
+	if reminders[index].index == index then
+		table.remove(reminders, index)
+	else
+		--if the reminder index doesnt match the array changed, we look for the index
+		for i = 1, #reminders do
+			if reminders[i].index == index then
+				table.remove(reminders, i)
+			end
+		end
+	end
+	SaveFile()
+end
+
+function RemoveAllReminders()
+	reminders = {}
 	SaveFile()
 end
 

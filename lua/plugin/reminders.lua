@@ -4,7 +4,7 @@ vim.api.nvim_create_user_command("RemindMeEvery", function(opts)
 		return
 	end
 
-	local reminderText = GetUserInput()
+	local reminderText = GetUserInput("What is the reminder: ")
 
 	if reminderText == "" then
 		return
@@ -27,7 +27,7 @@ vim.api.nvim_create_user_command("RemindMeDailyAt", function(opts)
 		hour = hour .. ":00"
 	end
 
-	local reminderText = GetUserInput()
+	local reminderText = GetUserInput("What is the reminder: ")
 
 	if reminderText == "" then
 		return
@@ -49,7 +49,7 @@ vim.api.nvim_create_user_command("RemindMeAt", function(opts)
 		hour = hour .. ":00"
 	end
 
-	local reminderText = GetUserInput()
+	local reminderText = GetUserInput("What is the reminder: ")
 
 	if reminderText == "" then
 		return
@@ -67,3 +67,17 @@ vim.api.nvim_create_user_command("ReminderClose", function()
 		RestartTimer()
 	end
 end, { desc = "Close notification" })
+
+vim.api.nvim_create_user_command("ReminderRemoveAt", function(opts)
+	local index = tonumber(Trim(opts.args))
+
+	if index == "" or index == nil then
+		return
+	end
+
+	RemoveReminder(index)
+end, { desc = "Remove reminder at index" })
+
+vim.api.nvim_create_user_command("ReminderRemoveAll", function()
+	RemoveAllReminders()
+end, { desc = "Remove reminder at index" })
