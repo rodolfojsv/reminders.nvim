@@ -37,7 +37,7 @@ function AddReminder(reminder)
 end
 
 function TimeToShow(reminder)
-	return reminder.remindDate >= os.time()
+	return reminder.remindDate <= os.time()
 end
 
 function CheckForNextExecution(reminder)
