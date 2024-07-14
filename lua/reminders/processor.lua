@@ -14,11 +14,12 @@ function InitializeRemindersFromFile()
 
 		-- For old reminders that were poorly designed
 		for i = 1, #reminders do
-			if reminders[i].remindAt ~= nil then
-				reminders[i].remindDate = ConvertToEpoch(reminders[i].remindAt)
-				reminders[i].remindAt = nil
+			if reminders[i].remindDate == nil then
+				if reminders[i].remindAt ~= nil then
+					reminders[i].remindDate = ConvertToEpoch(reminders[i].remindAt)
+					reminders[i].remindAt = nil
+				end
 			end
-
 			if reminders[i].index == nil then
 				reminders[i].index = i
 			end
@@ -65,6 +66,10 @@ function TimeToShow(reminder)
 end
 
 function CheckForNextExecution(reminder)
+	if reminder.remindDate == nil then
+		return
+	end
+
 	if reminder.remindEvery ~= nil and reminder.shownAt >= reminder.remindDate then
 		reminder.remindDate = os.time() + tonumber(reminder.remindEvery) * 60
 	end
@@ -73,6 +78,7 @@ function CheckForNextExecution(reminder)
 		--If you are not using the editor daily and the json doesnt get updated in a couple of days
 		--it is likely a better idea to not display it a couple times before determining to display until tomorrow.
 		reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
+
 		while reminder.remindDate < os.time() do
 			reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
 		end
@@ -94,7 +100,6 @@ function ProcessTimerCallback()
 			if not reminders[i].persistent then
 				table.remove(reminders, i)
 			else
-				CheckForNextExecution(reminders[i])
 				reminders[i].shownAt = os.time()
 			end
 
