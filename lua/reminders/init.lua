@@ -19,7 +19,9 @@ function reminders.setup(options)
 	end
 
 	local function on_timer()
-		ProcessTimerCallback()
+		if ProcessTimerCallback() then
+			timer:stop()
+		end
 	end
 
 	timer:start(options.minute_interval, options.minute_interval, vim.schedule_wrap(on_timer))
@@ -90,6 +92,7 @@ function reminders.setup(options)
 	vim.api.nvim_create_user_command("ReminderClose", function()
 		if has_notify then
 			require("notify").dismiss()
+			timer:again()
 		end
 	end, { desc = "Close notification" })
 end

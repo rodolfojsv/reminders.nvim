@@ -96,6 +96,8 @@ function ProcessTimerCallback()
 	if anyWasTriggered then
 		SaveFile()
 	end
+
+	return anyWasTriggered
 end
 
 function SaveFile()
