@@ -58,16 +58,15 @@ function ProcessTimerCallback()
 
 		if TimeToShow(reminders[i]) then
 			vim.notify(reminders[i].reminderMsg, vim.log.levels.INFO, {
-				title = "Reminders",
+				title = "Reminders [Index:" .. tostring(i) .. "]",
 				timeout = false,
-				on_close = function() end,
 			})
 
 			if not reminders[i].persistent then
 				table.remove(reminders, i)
 			else
 				if reminders[i].remindEvery ~= nil then
-					reminders[i].remindAt = nil
+					reminders[i].remindDate = nil
 					CheckForNextExecution(reminders[i])
 					reminders[i].shownAt = os.time()
 				end
