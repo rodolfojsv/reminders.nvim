@@ -109,8 +109,10 @@ end
 
 function ProcessTimerCallback()
 	local anyWasTriggered = false
+	local shouldCheckNext = false
 
 	for i = 1, #reminders do
+		shouldCheckNext = false
 		if TimeToShow(reminders[i]) then
 			vim.notify(reminders[i].reminderMsg, vim.log.levels.INFO, {
 				title = "Reminders [Index:" .. tostring(i) .. "]",
@@ -121,12 +123,16 @@ function ProcessTimerCallback()
 				table.remove(reminders, i)
 			else
 				reminders[i].shownAt = os.time()
+				shouldCheckNext = true
 			end
 
 			anyWasTriggered = true
 		end
 
-		CheckForNextExecution(reminders[i])
+		--Dnt check unless its necessary
+		if shouldCheckNext then
+			CheckForNextExecution(reminders[i])
+		end
 	end
 
 	if anyWasTriggered then
