@@ -10,7 +10,7 @@ vim.api.nvim_create_user_command("RemindMeEvery", function(opts)
 		return
 	end
 
-	local reminder = { reminderMsg = reminderText, remindEvery = minutes, persistent = true }
+	local reminder = { reminderMsg = reminderText, remindEvery = minutes, persistent = true, daily = false }
 
 	AddReminder(reminder)
 
@@ -32,7 +32,7 @@ vim.api.nvim_create_user_command("RemindMeDailyAt", function(opts)
 	if reminderText == "" then
 		return
 	end
-	local reminder = { reminderMsg = reminderText, remindAt = hour, persistent = true }
+	local reminder = { reminderMsg = reminderText, remindAt = hour, persistent = true, daily = true }
 
 	AddReminder(reminder)
 
