@@ -45,3 +45,19 @@ function FileExists(name)
 		return false
 	end
 end
+
+function ConvertToEpoch(remindAt)
+	local currentDate = os.date("*t")
+
+	local hm = Split(remindAt, ":")
+	local reminderHour = tonumber(hm[1])
+	local reminderMin = tonumber(hm[2])
+	-- local dt2 = os.time({ year = 2024, month = 5, day = 25, hour = 12, min = 25 })
+	return os.time({
+		year = currentDate.year,
+		month = currentDate.month,
+		day = currentDate.day,
+		hour = reminderHour,
+		min = reminderMin,
+	})
+end
