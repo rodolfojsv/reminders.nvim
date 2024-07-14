@@ -79,3 +79,11 @@ end, { desc = "Remove reminder at index", nargs = "?" })
 vim.api.nvim_create_user_command("ReminderRemoveAll", function()
 	RemoveAllReminders()
 end, { desc = "Remove reminder at index" })
+
+vim.api.nvim_create_user_command("ReminderFocusModeOn", function()
+	StopTimer()
+end, { desc = "Remove reminder at index" })
+
+vim.api.nvim_create_user_command("ReminderFocusModeOff", function()
+	RestartTimer()
+end, { desc = "Remove reminder at index" })

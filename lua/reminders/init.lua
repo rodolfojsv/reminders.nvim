@@ -35,6 +35,10 @@ function reminders.setup(options)
 	function RestartTimer()
 		timer:again()
 	end
+
+	function StopTimer()
+		timer:stop()
+	end
 end
 
 return reminders

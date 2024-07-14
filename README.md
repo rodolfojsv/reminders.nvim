@@ -33,6 +33,8 @@ Commands included:
 :ReminderClose (close notification)
 :ReminderRemoveAt 1 (Removes reminder at index 1, indexes are now shown as part of the title)
 :ReminderRemoveAll
+:ReminderFocusModeOff
+:ReminderFocusModeOn
 ```
 
 
@@ -44,4 +46,6 @@ My keymaps:
   vim.keymap.set('n', '<leader>rmc', ':ReminderClose<CR>', { desc = '[R]e[m]inder [C]lose' }),
   vim.keymap.set('n', '<leader>rmrz', ':ReminderRemoveAll<CR>', { desc = '[R]e[m]inder [R]emove All' }),
   vim.keymap.set('n', '<leader>rmra', ':ReminderRemoveAt ', { desc = '[R]e[m]inder [R]emove [A]t' }),
+  vim.keymap.set('n', '<leader>rmfo', ':ReminderFocusModeOff<CR>', { desc = '[R]e[m]inder [F]ocusMode [O]ff' }),
+  vim.keymap.set('n', '<leader>rmfm', ':ReminderFocusModeOn<CR>', { desc = '[R]e[m]inder [F]ocus[M]ode On' }),
 ```
