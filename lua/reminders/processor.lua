@@ -11,12 +11,11 @@ end
 function InitializeRemindersFromFile()
 	if FileExists(filePath) then
 		reminders = vim.fn.json_decode(ReadAll(filePath))
-
 		-- For old reminders that were poorly designed
 		for i = 1, #reminders do
-			if reminders[i].remindDate == nil then
+			if reminders[i].reminderDate == nil then
 				if reminders[i].remindAt ~= nil then
-					reminders[i].remindDate = ConvertToEpoch(reminders[i].remindAt)
+					reminders[i].reminderDate = ConvertToEpoch(reminders[i].remindAt)
 					reminders[i].remindAt = nil
 				end
 			end
@@ -29,7 +28,7 @@ end
 
 function AddReminder(reminder)
 	if reminder.remindAt ~= nil then
-		reminder.remindDate = ConvertToEpoch(reminder.remindAt)
+		reminder.reminderDate = ConvertToEpoch(reminder.remindAt)
 		reminder.remindAt = nil
 	end
 
@@ -62,25 +61,25 @@ function RemoveAllReminders()
 end
 
 function TimeToShow(reminder)
-	return reminder.remindDate <= os.time()
+	return reminder.reminderDate <= os.time()
 end
 
 function CheckForNextExecution(reminder)
-	if reminder.remindDate == nil then
+	if reminder.reminderDate == nil then
 		return
 	end
 
-	if reminder.remindEvery ~= nil and reminder.shownAt >= reminder.remindDate then
-		reminder.remindDate = os.time() + tonumber(reminder.remindEvery) * 60
+	if reminder.remindEvery ~= nil and reminder.shownAt >= reminder.reminderDate then
+		reminder.reminderDate = os.time() + tonumber(reminder.remindEvery) * 60
 	end
 
-	if reminder.daily ~= nil and reminder.daily and reminder.shownAt >= reminder.remindDate then
+	if reminder.daily ~= nil and reminder.daily and reminder.shownAt >= reminder.reminderDate then
 		--If you are not using the editor daily and the json doesnt get updated in a couple of days
 		--it is likely a better idea to not display it a couple times before determining to display until tomorrow.
-		reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
+		reminder.reminderDate = reminder.reminderDate + 24 * 60 * 60
 
-		while reminder.remindDate < os.time() do
-			reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
+		while reminder.reminderDate < os.time() do
+			reminder.reminderDate = reminder.reminderDate + 24 * 60 * 60
 		end
 	end
 end
