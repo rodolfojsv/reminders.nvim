@@ -61,7 +61,7 @@ function RemoveAllReminders()
 end
 
 function TimeToShow(reminder)
-	return reminder.reminderDate <= os.time()
+	return reminder.reminderDate ~= nil and reminder.reminderDate <= os.time()
 end
 
 function CheckForNextExecution(reminder)
