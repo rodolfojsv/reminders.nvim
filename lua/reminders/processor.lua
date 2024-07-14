@@ -89,11 +89,9 @@ function ProcessTimerCallback()
 			if not reminders[i].persistent then
 				table.remove(reminders, i)
 			else
-				if reminders[i].remindEvery ~= nil then
-					reminders[i].remindDate = nil
-					CheckForNextExecution(reminders[i])
-					reminders[i].shownAt = os.time()
-				end
+				reminders[i].remindDate = nil
+				CheckForNextExecution(reminders[i])
+				reminders[i].shownAt = os.time()
 			end
 
 			anyWasTriggered = true
