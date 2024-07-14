@@ -72,6 +72,7 @@ function CheckForNextExecution(reminder)
 	if reminder.daily ~= nil and reminder.daily and reminder.remindDate == nil then
 		--If you are not using the editor daily and the json doesnt get updated in a couple of days
 		--it is likely a better idea to not display it a couple times before determining to display until tomorrow.
+		reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
 		while reminder.remindDate < os.time() do
 			reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
 		end
