@@ -70,7 +70,7 @@ function CheckForNextExecution(reminder)
 	end
 
 	if reminder.daily ~= nil and reminder.daily and reminder.remindDate == nil then
-		reminder.reminderDate = os.time() + 24 * 60 * 60
+		reminder.reminderDate = reminder.remindDate + 24 * 60 * 60
 	end
 end
 
