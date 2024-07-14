@@ -70,13 +70,11 @@ end, { desc = "Close notification" })
 
 vim.api.nvim_create_user_command("ReminderRemoveAt", function(opts)
 	local index = Trim(opts.args)
-
 	if index == "" or index == nil then
 		return
 	end
-
-	RemoveReminder(tonumber(index))
-end, { desc = "Remove reminder at index" })
+	RemoveReminder(index)
+end, { desc = "Remove reminder at index", nargs = "?" })
 
 vim.api.nvim_create_user_command("ReminderRemoveAll", function()
 	RemoveAllReminders()
