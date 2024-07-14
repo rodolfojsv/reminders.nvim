@@ -15,6 +15,15 @@ function InitializeRemindersFromFile()
 end
 
 function AddReminder(reminder)
+	local currentDate = os.date("*t")
+	local reminderDate = tostring(currentDate.year)
+		.. "-"
+		.. tostring(currentDate.month)
+		.. "-"
+		.. tostring(currentDate.day)
+		.. "Z"
+		.. reminder.remindAt
+
 	if not reminder.remindEvery == nil then
 		CheckForNextExecution(reminder)
 	end
@@ -34,7 +43,7 @@ function TimeToShow(reminder)
 	local hasNotShownToday = reminder.shownAt == nil
 		or (not reminder.shownAt == nil and reminder.shownAt < currentDate.day)
 	return ((currentDate.hour == reminderHour and currentDate.min >= reminderMin) or currentDate.hour > reminderHour)
-		and hasNotShownToday
+		and (hasNotShownToday or reminder.remindEvery ~= nil)
 end
 
 function CheckForNextExecution(reminder)
@@ -81,7 +90,6 @@ function ProcessTimerCallback()
 				if reminders[i].remindEvery ~= nil then
 					reminders[i].remindAt = nil
 					CheckForNextExecution(reminders[i])
-				else
 					reminders[i].shownAt = currentDate.day
 				end
 			end
