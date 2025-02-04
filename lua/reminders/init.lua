@@ -3,6 +3,9 @@ require("reminders.utils")
 require("plugin.reminders")
 local reminders = {}
 
+reminders.AddReminder = AddReminder
+reminders.RemoveAllReminders = RemoveAllReminders
+
 function reminders.setup(options)
 	options = options or {}
 	options.minute_interval = (options.minute_interval or 1) * 60 * 1000
