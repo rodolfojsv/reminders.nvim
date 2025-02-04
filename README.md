@@ -51,3 +51,40 @@ My keymaps:
   vim.keymap.set('n', '<leader>rmfo', ':ReminderFocusModeOff<CR>', { desc = '[R]e[m]inder [F]ocusMode [O]ff' }),
   vim.keymap.set('n', '<leader>rmfm', ':ReminderFocusModeOn<CR>', { desc = '[R]e[m]inder [F]ocus[M]ode On' }),
 ```
+
+Creating default persistent reminders from your init source file: 
+
+```
+      local function load_reminders()
+            reminders.AddReminder({
+                reminderMsg = "Hydrate",
+                remindEvery = "22",
+                persistent = true,
+                daily = false,
+            })
+            reminders.AddReminder({
+                reminderMsg = "Scrum",
+                remindAt = "9:28",
+                persistent = true,
+                daily = true,
+            })
+        end
+```
+
+To remove all reminders and reload your defaults you can do something similar to this: 
+
+```
+        -- if there is no reminder file then create one with default events
+        if vim.fn.filereadable(reminder_json_file) ~= 1 then
+            load_reminders()
+        end
+
+        -- function to reload default events
+        local function map_reload()
+            reminders.RemoveAllReminders()
+            load_reminders()
+        end
+
+        -- keymap to reload reminders file from source
+        vim.keymap.set('n', '<leader>rr', map_reload, { desc = 'reload reminders from source control' } )
+```
