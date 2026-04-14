@@ -193,8 +193,29 @@ function M.has_content()
 	return false
 end
 
+--- Reposition and resize the briefing window to stay centered.
+local function reposition()
+	if not briefing_win or not vim.api.nvim_win_is_valid(briefing_win) then
+		return
+	end
+	local width = math.floor(vim.o.columns * 0.8)
+	local height = math.floor(vim.o.lines * 0.8)
+	local row = math.floor((vim.o.lines - height) / 2)
+	local col = math.floor((vim.o.columns - width) / 2)
+	vim.api.nvim_win_set_config(briefing_win, {
+		relative = "editor",
+		width = width,
+		height = height,
+		row = row,
+		col = col,
+	})
+end
+
+local resize_augroup = vim.api.nvim_create_augroup("RemindersBriefingResize", { clear = true })
+
 --- Close the briefing modal.
 function M.close()
+	vim.api.nvim_clear_autocmds({ group = resize_augroup })
 	if briefing_win and vim.api.nvim_win_is_valid(briefing_win) then
 		vim.api.nvim_win_close(briefing_win, true)
 	end
@@ -241,6 +262,13 @@ function M.open()
 		border = "rounded",
 		title = " Reminders Briefing ",
 		title_pos = "center",
+	})
+
+	-- Reposition on terminal resize
+	vim.api.nvim_clear_autocmds({ group = resize_augroup })
+	vim.api.nvim_create_autocmd("VimResized", {
+		group = resize_augroup,
+		callback = reposition,
 	})
 
 	-- Keymaps to close
