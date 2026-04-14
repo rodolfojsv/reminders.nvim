@@ -1,21 +1,24 @@
+local utils = require("reminders.utils")
+
+local M = {}
 local reminders = {}
 local filePath
 
-function InitializeFilePath(directory)
-	if not directory:endswith("/") then
+function M.initialize_file_path(directory)
+	if not utils.endswith(directory, "/") and not utils.endswith(directory, "\\") then
 		directory = directory .. "/"
 	end
 	filePath = directory .. "reminders.json"
 end
 
-function InitializeRemindersFromFile()
-	if FileExists(filePath) then
-		reminders = vim.fn.json_decode(ReadAll(filePath))
-		-- For old reminders that were poorly designed
+function M.initialize_reminders_from_file(default_category)
+	if utils.file_exists(filePath) then
+		reminders = vim.fn.json_decode(utils.read_all(filePath))
 		for i = 1, #reminders do
+			-- Migrate old schema: remindAt → reminderDate
 			if reminders[i].reminderDate == nil then
 				if reminders[i].remindAt ~= nil then
-					reminders[i].reminderDate = ConvertToEpoch(reminders[i].remindAt)
+					reminders[i].reminderDate = utils.convert_to_epoch(reminders[i].remindAt)
 					reminders[i].shownAt = reminders[i].reminderDate - 60
 					reminders[i].remindAt = nil
 				end
@@ -23,19 +26,23 @@ function InitializeRemindersFromFile()
 			if reminders[i].index == nil then
 				reminders[i].index = i
 			end
+			-- Migrate: add category if missing
+			if reminders[i].category == nil then
+				reminders[i].category = default_category or "personal"
+			end
 		end
 	end
 end
 
-function AddReminder(reminder)
+function M.add_reminder(reminder)
 	if reminder.remindAt ~= nil then
-		reminder.reminderDate = ConvertToEpoch(reminder.remindAt)
+		reminder.reminderDate = utils.convert_to_epoch(reminder.remindAt)
 		reminder.shownAt = reminder.reminderDate - 60
 		reminder.remindAt = nil
 	end
 
 	if reminder.remindEvery ~= nil then
-		CheckForNextExecution(reminder)
+		M.check_for_next_execution(reminder)
 	end
 
 	if reminder.remindIn ~= nil then
@@ -44,35 +51,40 @@ function AddReminder(reminder)
 		reminder.remindIn = nil
 	end
 
+	reminder.category = reminder.category or "personal"
 	reminder.index = #reminders + 1
 	table.insert(reminders, reminder)
-	SaveFile()
+	M.save_file()
 end
 
-function RemoveReminder(index)
-	if reminders[index].index == index then
+function M.remove_reminder(index)
+	if reminders[index] and reminders[index].index == index then
 		table.remove(reminders, index)
 	else
-		--if the reminder index doesnt match the array changed, we look for the index
 		for i = 1, #reminders do
 			if reminders[i].index == index then
 				table.remove(reminders, i)
+				break
 			end
 		end
 	end
-	SaveFile()
+	M.save_file()
 end
 
-function RemoveAllReminders()
+function M.remove_all_reminders()
 	reminders = {}
-	SaveFile()
+	M.save_file()
 end
 
-function TimeToShow(reminder)
+function M.get_reminders()
+	return reminders
+end
+
+function M.time_to_show(reminder)
 	return reminder.reminderDate ~= nil and reminder.reminderDate <= os.time()
 end
 
-function CheckForNextExecution(reminder)
+function M.check_for_next_execution(reminder)
 	if reminder.reminderDate == nil and reminder.remindEvery == nil then
 		return
 	end
@@ -91,8 +103,6 @@ function CheckForNextExecution(reminder)
 		and reminder.daily
 		and (reminder.reminderDate == nil or (reminder.shownAt >= reminder.reminderDate))
 	then
-		--If you are not using the editor daily and the json doesnt get updated in a couple of days
-		--it is likely a better idea to not display it a couple times before determining to display until tomorrow.
 		reminder.reminderDate = reminder.reminderDate + 24 * 60 * 60
 
 		while reminder.reminderDate < os.time() do
@@ -104,16 +114,16 @@ function CheckForNextExecution(reminder)
 		end
 	end
 
-	SaveFile()
+	M.save_file()
 end
 
-function ProcessTimerCallback()
+function M.process_timer_callback()
 	local anyWasTriggered = false
 	local shouldCheckNext = false
 
 	for i = 1, #reminders do
 		shouldCheckNext = false
-		if TimeToShow(reminders[i]) then
+		if M.time_to_show(reminders[i]) then
 			vim.notify(reminders[i].reminderMsg, vim.log.levels.INFO, {
 				title = "Reminders [Index:" .. tostring(i) .. "]",
 				timeout = false,
@@ -129,22 +139,25 @@ function ProcessTimerCallback()
 			anyWasTriggered = true
 		end
 
-		--Dnt check unless its necessary
 		if shouldCheckNext then
-			CheckForNextExecution(reminders[i])
+			M.check_for_next_execution(reminders[i])
 		end
 	end
 
 	if anyWasTriggered then
-		SaveFile()
+		M.save_file()
 	end
 
 	return anyWasTriggered
 end
 
-function SaveFile()
+function M.save_file()
 	local file = io.open(filePath, "w")
-	io.output(file)
-	io.write(vim.fn.json_encode(reminders))
-	io.close(file)
+	if file then
+		io.output(file)
+		io.write(vim.fn.json_encode(reminders))
+		io.close(file)
+	end
 end
+
+return M
