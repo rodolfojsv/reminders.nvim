@@ -159,9 +159,9 @@ function M.render_jira_section()
 	table.insert(lines, "  JIRA ISSUES (" .. #issues .. ")")
 	for _, issue in ipairs(issues) do
 		local icon = jira.priority_icon(issue.priority)
+		local url = jira.issue_url(issue.key)
 		local line = string.format("  %s %-12s [%-11s] %s", icon, issue.key, issue.status, issue.summary)
 		table.insert(lines, line)
-		local url = jira.issue_url(issue.key)
 		if url then
 			line_action_map[#lines] = url
 		end
@@ -284,24 +284,33 @@ function M.open()
 	end
 
 	-- <CR> to open action URL (join link, issue URL, etc.)
+	local function open_line_url()
+		local line_nr = vim.api.nvim_win_get_cursor(0)[1]
+		local url = line_actions[line_nr]
+		if url then
+			vim.fn.setreg("+", url)
+			if vim.fn.has("win32") == 1 then
+				vim.fn.system('start "" "' .. url .. '"')
+			elseif vim.fn.has("mac") == 1 then
+				vim.fn.system("open " .. vim.fn.shellescape(url))
+			else
+				vim.fn.system("xdg-open " .. vim.fn.shellescape(url))
+			end
+			vim.notify("Opened: " .. url, vim.log.levels.INFO)
+		end
+	end
+
 	vim.api.nvim_buf_set_keymap(briefing_buf, "n", "<CR>", "", {
 		noremap = true,
 		silent = true,
-		callback = function()
-			local line_nr = vim.api.nvim_win_get_cursor(0)[1]
-			local url = line_actions[line_nr]
-			if url then
-				vim.fn.setreg("+", url)
-				if vim.fn.has("win32") == 1 then
-					vim.fn.system('start "" "' .. url .. '"')
-				elseif vim.fn.has("mac") == 1 then
-					vim.fn.system("open " .. vim.fn.shellescape(url))
-				else
-					vim.fn.system("xdg-open " .. vim.fn.shellescape(url))
-				end
-				vim.notify("Opened: " .. url, vim.log.levels.INFO)
-			end
-		end,
+		callback = open_line_url,
+	})
+
+	-- gx to open the Jira URL for the current line (mirrors default gx behavior)
+	vim.api.nvim_buf_set_keymap(briefing_buf, "n", "gx", "", {
+		noremap = true,
+		silent = true,
+		callback = open_line_url,
 	})
 end
 
