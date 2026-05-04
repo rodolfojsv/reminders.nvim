@@ -151,6 +151,20 @@ describe("reminders.jira", function()
 		end)
 
 		it("ignores stale cache from a different day", function()
+			helpers.reset_modules()
+			config = require("reminders.config")
+			config.setup({
+				directory_path = tmp_dir,
+				jira = {
+					enabled = true,
+					bin = "jira-nonexistent-binary",
+					host = "https://mycompany.atlassian.net",
+					exclude_statuses = { "Done", "Closed" },
+					refresh_interval_minutes = 15,
+				},
+			})
+			jira = require("reminders.jira")
+
 			local cache_path = tmp_dir .. "/jira_cache.json"
 			local cache_data = {
 				updated_at = os.time() - 86400,

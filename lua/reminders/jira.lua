@@ -50,6 +50,27 @@ local function save_cache()
 	end
 end
 
+--- Filter issues by excluded statuses from config.
+---@param issues table[]
+---@return table[]
+local function filter_excluded(issues)
+	local jira_cfg = get_jira_config()
+	local exclude = {}
+	for _, s in ipairs(jira_cfg.exclude_statuses or {}) do
+		exclude[s:lower()] = true
+	end
+	if not next(exclude) then
+		return issues
+	end
+	local filtered = {}
+	for _, issue in ipairs(issues) do
+		if not exclude[issue.status:lower()] then
+			table.insert(filtered, issue)
+		end
+	end
+	return filtered
+end
+
 --- Load cached issues from disk (only today's data).
 ---@return boolean loaded
 local function load_cache()
@@ -74,9 +95,9 @@ local function load_cache()
 		return false
 	end
 	if data.issues and #data.issues > 0 then
-		cached_issues = data.issues
+		cached_issues = filter_excluded(data.issues)
 		last_fetch = data.updated_at or 0
-		return true
+		return #cached_issues > 0
 	end
 	return false
 end
@@ -173,7 +194,11 @@ function M.fetch(force)
 	end
 
 	local args = build_list_args()
-	local result = vim.system(args, { text = true, timeout = 30000 }):wait()
+	local ok, obj = pcall(vim.system, args, { text = true, timeout = 30000 })
+	if not ok then
+		return cached_issues
+	end
+	local result = obj:wait()
 
 	if result.code ~= 0 then
 		-- Non-zero may just mean "no results" — check stderr
@@ -191,21 +216,7 @@ function M.fetch(force)
 	end
 
 	local issues = M.parse_output(result.stdout)
-
-	-- Filter excluded statuses
-	local exclude = {}
-	for _, s in ipairs(jira_cfg.exclude_statuses or {}) do
-		exclude[s:lower()] = true
-	end
-	if next(exclude) then
-		local filtered = {}
-		for _, issue in ipairs(issues) do
-			if not exclude[issue.status:lower()] then
-				table.insert(filtered, issue)
-			end
-		end
-		issues = filtered
-	end
+	issues = filter_excluded(issues)
 
 	cached_issues = issues
 	last_fetch = now
