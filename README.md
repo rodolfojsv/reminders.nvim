@@ -32,7 +32,7 @@ require('reminders').setup {
 
   -- Briefing modal settings
   briefing = {
-    on_startup = false,       -- open briefing automatically when Neovim starts
+    on_startup = false,       -- false, true, or "once_daily"
     greeting = true,          -- show greeting with time of day
     name = "Your Name",       -- name shown in the greeting
     sections = { "jira", "reminders", "personal" },  -- order and visibility of sections
@@ -100,6 +100,11 @@ vim.keymap.set('n', '<leader>rml', ':ReminderList<CR>', { desc = '[R]e[m]inder [
 ## Briefing
 
 The briefing is a floating modal that shows a summary of your day. Open it with `:ReminderBriefing` or set `briefing.on_startup = true` to open it automatically.
+
+The `on_startup` option accepts three values:
+- `false` – never show the briefing on startup (default)
+- `true` – show the briefing every time Neovim starts
+- `"once_daily"` – show the briefing only once per day (useful if you open multiple Neovim instances)
 
 Inside the briefing:
 - Press `<CR>` on a Jira issue to open it in your browser

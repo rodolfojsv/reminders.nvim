@@ -314,4 +314,45 @@ function M.open()
 	})
 end
 
+--- Get the path to the briefing state file that tracks the last shown date.
+---@return string|nil
+local function get_state_file_path()
+	local cfg = config.get()
+	if not cfg.directory_path then
+		return nil
+	end
+	return cfg.directory_path .. "/briefing_last_shown"
+end
+
+--- Check whether the briefing has already been shown today.
+---@return boolean
+function M.shown_today()
+	local path = get_state_file_path()
+	if not path then
+		return false
+	end
+	local f = io.open(path, "r")
+	if not f then
+		return false
+	end
+	local content = f:read("*a")
+	f:close()
+	local today = os.date("%Y-%m-%d")
+	return vim.trim(content) == today
+end
+
+--- Record that the briefing was shown today.
+function M.mark_shown_today()
+	local path = get_state_file_path()
+	if not path then
+		return
+	end
+	local f = io.open(path, "w")
+	if not f then
+		return
+	end
+	f:write(os.date("%Y-%m-%d"))
+	f:close()
+end
+
 return M

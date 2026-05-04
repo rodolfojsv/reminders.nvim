@@ -59,14 +59,21 @@ function M.setup(options)
 	commands.register(M.has_notify_fn, M.restart_timer, M.stop_timer)
 
 	-- Startup briefing autocmd
-	if cfg.briefing and cfg.briefing.on_startup then
+	local on_startup = cfg.briefing and cfg.briefing.on_startup
+	if on_startup then
 		vim.api.nvim_create_autocmd("VimEnter", {
 			callback = function()
 				-- Defer to let dashboard or other startup plugins render first
 				vim.defer_fn(function()
 					local briefing = require("reminders.briefing")
+					if on_startup == "once_daily" and briefing.shown_today() then
+						return
+					end
 					if briefing.has_content() then
 						briefing.open()
+						if on_startup == "once_daily" then
+							briefing.mark_shown_today()
+						end
 					end
 				end, 200)
 			end,
